@@ -144,7 +144,7 @@ void loop() {
         else if (key == '=') {
             // AC
             if (long_push) {
-                x = y = z = t = 0;
+                x = 0;
                 x_disp = "";
                 prev_pushed_key_type = 0;
             }
