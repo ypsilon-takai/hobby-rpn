@@ -123,8 +123,8 @@ void loop() {
             }
         }
 
-        // operator
-        if (key == '+' || key == '-' || key == '*' || key == '/') {
+        // operator other than '/'
+        if (key == '+' || key == '-' || key == '*') {
             float64_t acc1 = x;
             pop();
             float64_t acc2 = x;
@@ -133,11 +133,30 @@ void loop() {
                 case '+': x = fp64_add(acc2, acc1); break;
                 case '-': x = fp64_sub(acc2, acc1); break;
                 case '*': x = fp64_mul(acc2, acc1); break;
-                case '/': x = fp64_div(acc2, acc1); break;
             }
 
             x_disp = fp64_to_string_wrap(x);
             prev_pushed_key_type = 1;
+            blink_display();
+        }
+        // '/' or x<>y
+        else if (key == '/') {
+            // swap x and y
+            if (long_push) {
+                float64_t tmp = x;
+                x = y;
+                y = tmp;
+            }
+            // '/' key
+            else {
+                float64_t acc1 = x;
+                pop();
+                float64_t acc2 = x;
+    
+                x = fp64_div(acc2, acc1);
+            }
+            x_disp = fp64_to_string_wrap(x);            
+            prev_pushed_key_type = 1;            
             blink_display();
         }
         // enter
