@@ -124,20 +124,36 @@ void loop() {
         }
 
         // operator
-        if (key == '+' || key == '-' || key == '*' || key == '/') {
+        if (key == '+' || key == '*' || key == '/') {
             float64_t acc1 = x;
             pop();
             float64_t acc2 = x;
 
             switch (key) {
                 case '+': x = fp64_add(acc2, acc1); break;
-                case '-': x = fp64_sub(acc2, acc1); break;
                 case '*': x = fp64_mul(acc2, acc1); break;
                 case '/': x = fp64_div(acc2, acc1); break;
             }
-
             x_disp = fp64_to_string_wrap(x);
             prev_pushed_key_type = 1;
+            blink_display();
+        }
+        else if (key == '-') {
+            // -/+ change sign
+            if (long_push) {
+                x = -x;
+                prev_pushed_key_type = 0;
+            }
+            // - substruct
+            else {
+                float64_t acc1 = x;
+                pop();
+                float64_t acc2 = x;
+
+                x = fp64_sub(acc2, acc1);
+                prev_pushed_key_type = 1;
+            }
+            x_disp = fp64_to_string_wrap(x);
             blink_display();
         }
         // enter
