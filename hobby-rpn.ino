@@ -123,19 +123,37 @@ void loop() {
             }
         }
 
-        if (key == '+' || key == '*') {
+        if (key == '+') {
+            // no long press
             float64_t acc1 = x;
             pop();
             float64_t acc2 = x;
 
-            switch (key) {
-                case '+': x = fp64_add(acc2, acc1); break;
-                case '*': x = fp64_mul(acc2, acc1); break;
-            }
+            x = fp64_add(acc2, acc1);
+
             x_disp = fp64_to_string_wrap(x);
             prev_pushed_key_type = 1;
             blink_display();
         }
+        // sqrt or multiply
+        else if (key == '*') {
+            // square root
+            if (long_push) {
+                x = fp64_sqrt(x);
+                prev_pushed_key_type = 1;
+            }
+            // - substruct
+            else {
+                float64_t acc1 = x;
+                pop();
+                float64_t acc2 = x;
+
+                x = fp64_mul(acc2, acc1);
+                prev_pushed_key_type = 1;
+            }
+            x_disp = fp64_to_string_wrap(x);
+        }
+        // chsgn or substruct
         else if (key == '-') {
             // -/+ change sign
             if (long_push) {
@@ -173,9 +191,9 @@ void loop() {
             prev_pushed_key_type = 1;            
             blink_display();
         }
-        // enter
+        // clear or enter
         else if (key == '=') {
-            // AC
+            // clear
             if (long_push) {
                 x = 0;
                 x_disp = "";
