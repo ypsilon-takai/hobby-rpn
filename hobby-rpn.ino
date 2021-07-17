@@ -141,7 +141,7 @@ void loop() {
         else if (key == '-') {
             // -/+ change sign
             if (long_push) {
-                x = -x;
+                x = fp64_neg(x);
                 prev_pushed_key_type = 0;
             }
             // - substruct
