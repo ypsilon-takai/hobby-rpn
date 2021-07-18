@@ -70,8 +70,24 @@ void blink_display() {
 
 void init_display() {
     display.clearDisplay();
-    display.setCursor(4, 12);
+    display.setCursor(4, 18);
 }
+
+void update_display(String x_disp, String y_disp, boolean is_two_line) {
+    display.clearDisplay();
+
+    display.setCursor(4, 0);
+    display.print(y_disp);
+
+    display.setCursor(4, 18);
+    if (x_disp == "") {
+        x_disp = "0.";
+    }
+    display.print(x_disp);
+
+    display.display();
+}
+    
 
 String fp64_to_string_wrap(float64_t n) {
     if (fp64_signbit(n)) {  // minus
@@ -81,6 +97,7 @@ String fp64_to_string_wrap(float64_t n) {
         return fp64_to_string(n, MAX_DIGIT, MAX_DIGIT - 2);
     }
 }
+
 
 void setup() {
     CLKPR = 0x80; 
@@ -98,7 +115,7 @@ void setup() {
     display.setTextColor(WHITE);
     display.setTextSize(2);
     init_display();
-    display.print("0.00");
+    display.print("0.");
     display.display();
 
     x = y = z = t = 0;
@@ -106,6 +123,7 @@ void setup() {
 
 void loop() {
     static String x_disp = "";
+    static String y_disp = "";
     static char prev_loop_key = 0;
     static byte prev_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
 
@@ -223,14 +241,8 @@ void loop() {
         }
 
         // display
-        init_display();
-        if (x_disp == "") {
-            display.print("0.00");
-        }
-        else {
-            display.print(x_disp);
-        }
-        display.display();
+        y_disp = fp64_to_string_wrap(y);
+        update_display(x_disp, y_disp, true);
     }
     prev_loop_key = key;
     delay(1);
