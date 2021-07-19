@@ -13,6 +13,7 @@ byte pin_col[] = {0, 1, 2, 3};   // PD
 byte pin_row[] = {3, 2, 1, 0};   // PC
 
 float64_t x, y, z, t;
+byte last_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
 
 void push() {
     t = z;
@@ -176,7 +177,7 @@ void loop() {
             // -/+ change sign
             if (long_push) {
                 x = fp64_neg(x);
-                prev_pushed_key_type = 0;
+                prev_pushed_key_type = last_pushed_key_type;
             }
             // - substruct
             else {
@@ -244,6 +245,7 @@ void loop() {
         y_disp = fp64_to_string_wrap(y);
         update_display(x_disp, y_disp, true);
     }
+    last_pushed_key_type = prev_pushed_key_type;
     prev_loop_key = key;
     delay(1);
 }
