@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>    // Core graphics library
 #include <fp64lib.h>
+#include "font/Voyeger7seg9pt7b.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
@@ -70,17 +72,22 @@ void blink_display() {
 }
 
 void init_display() {
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    display.setTextColor(WHITE);
+
     display.clearDisplay();
-    display.setCursor(4, 18);
+    display.setFont(&Voyeger7seg9pt7b);
+    display.setTextSize(1);
+    display.setCursor(4, 31);
 }
 
 void update_display(String x_disp, String y_disp, boolean is_two_line) {
     display.clearDisplay();
 
-    display.setCursor(4, 0);
+    display.setCursor(4, 13);
     display.print(y_disp);
 
-    display.setCursor(4, 18);
+    display.setCursor(4, 31);
     if (x_disp == "") {
         x_disp = "0.";
     }
@@ -112,9 +119,6 @@ void setup() {
     DDRC  &= ~(_BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]));  // INPUT
     PORTC |=   _BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]);   // PULLUP
 
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    display.setTextColor(WHITE);
-    display.setTextSize(2);
     init_display();
     display.print("0.");
     display.display();
