@@ -20,6 +20,15 @@ Tokyo Flip-flopさんが提供している小型のRPN電卓同人ハードで�
 
 ## MAIN機能状況
 
+** [現在Wikiページに情報を移行中](https://github.com/ypsilon-takai/hobby-rpn/wiki) ** 
+
+Wikiの方もご覧ください。
+
+今の見た目
+
+![こんな見た目です。](readme-image/calc_image_01.jpg)
+
+
 ### "=" 長押しで、全クリアでなくて、xのみ消去
 
 **ステータス**： 済
