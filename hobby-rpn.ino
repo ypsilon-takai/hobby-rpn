@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <fp64lib.h>
 #include "font/Voyeger7seg9pt7b.h"
+#include "font/yosi_6x4.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
@@ -11,11 +12,22 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 
 #define MAX_DIGIT     10
 
+#define GFX_BLACK 0
+#define GFX_WHITE 1
+
 byte pin_col[] = {0, 1, 2, 3};   // PD
 byte pin_row[] = {3, 2, 1, 0};   // PC
 
 float64_t x, y, z, t;
 byte last_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
+
+boolean shift_mode = false;
+
+enum angle_type {degree, radian, grad};
+enum angle_type angle_mode = degree;
+
+GFXfont* mode_area_font = &yosi_6x4;
+GFXfont* digit_area_font = &Voyeger7seg9pt7b;
 
 void push() {
     t = z;
@@ -71,19 +83,47 @@ void blink_display() {
     delay(20);
 }
 
+void draw_mode_area() {
+    display.setFont(mode_area_font);
+    if (angle_mode == radian) {
+        display.setTextSize(1);
+        display.setCursor(123, 8);
+        display.print('R');
+    }
+    
+    if (shift_mode == true) {
+        display.fillRect(122, 17, 6, 8, 1);    
+        display.setCursor(123, 24);
+        display.setTextColor(GFX_BLACK);
+        display.print('S');
+        display.setTextColor(GFX_WHITE);
+    }
+    display.setFont(digit_area_font);
+}    
+
 void init_display() {
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.setTextColor(WHITE);
 
     display.clearDisplay();
-    display.setFont(&Voyeger7seg9pt7b);
+
+    draw_mode_area();
+        
+    display.setFont(digit_area_font);
     display.setTextSize(1);
     display.setCursor(4, 31);
+    display.print("0.");
+    display.display();
 }
 
 void update_display(String x_disp, String y_disp, boolean is_two_line) {
     display.clearDisplay();
 
+    draw_mode_area();
+    
+    display.setFont(digit_area_font);
+    display.setTextSize(1);
+    
     display.setCursor(4, 13);
     display.print(y_disp);
 
@@ -120,9 +160,7 @@ void setup() {
     PORTC |=   _BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]);   // PULLUP
 
     init_display();
-    display.print("0.");
-    display.display();
-
+    
     x = y = z = t = 0;
 }
 
