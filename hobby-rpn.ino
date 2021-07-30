@@ -146,6 +146,13 @@ String fp64_to_string_wrap(float64_t n) {
     }
 }
 
+float64_t deg2rad(float64_t deg) {
+    return fp64_div(fp64_mul(deg,float64_NUMBER_PI), fp64_sd(180));
+}
+
+float64_t rad2deg(float64_t rad) {
+    return fp64_div(fp64_mul(rad, fp64_sd(180)), float64_NUMBER_PI);
+}
 
 void setup() {
     CLKPR = 0x80; 
@@ -271,16 +278,85 @@ void loop() {
         }
         // numeral or .
         else {
-            if (prev_pushed_key_type == 1) push();          // operator
-            if (prev_pushed_key_type > 0) x_disp = "";      // operator or enter
-            
-            if (x_disp.length() < MAX_DIGIT) {
-                if (x_disp.indexOf(".") == -1 || key != '.') {
-                    x_disp.concat(key);
-                    x = fp64_atof((char*)x_disp.c_str());
+            if (long_push) {
+                // toggle mode
+                if(key == '0') {
+                    if (angle_mode == degree) {
+                        angle_mode = radian;
+                    }
+                    else if (angle_mode == radian) {
+                        angle_mode = degree;
+                    }
                 }
+
+                // Trigonometric functions
+                else if(key == '7') {
+                    if (angle_mode == degree) x = deg2rad(x);
+                    x = fp64_sin(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '8') {
+                    if (angle_mode == degree) x = deg2rad(x);
+                    x = fp64_cos(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '9') {
+                    if (angle_mode == degree) x = deg2rad(x);
+                    x = fp64_tan(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '4') {
+                    x = fp64_asin(x);
+                    if (angle_mode == degree) x = rad2deg(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '5') {
+                    x = fp64_acos(x);
+                    if (angle_mode == degree) x = rad2deg(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '6') {
+                    x = fp64_atan(x);
+                    if (angle_mode == degree) x = rad2deg(x);
+                    prev_pushed_key_type = 1;
+                }
+                // logarithm
+                else if(key == '1') {
+                    x = fp64_log10(x);
+                    prev_pushed_key_type = 1;
+                }
+                else if(key == '2') {
+                    x = fp64_log(x);
+                    prev_pushed_key_type = 1;
+                }
+                // power
+                else if(key == '3') {
+                    float64_t acc1 = x;
+                    pop();
+                    float64_t acc2 = x;
+
+                    x = fp64_pow(acc2, acc1);
+
+                    x_disp = fp64_to_string_wrap(x);
+                    prev_pushed_key_type = 1;
+                    prev_pushed_key_type = 1;
+                }
+                x_disp = fp64_to_string_wrap(x);
+                blink_display();
             }
-            prev_pushed_key_type = 0;
+            else {
+                
+                if (prev_pushed_key_type == 1) push();          // operator
+                if (prev_pushed_key_type > 0) x_disp = "";      // operator or enter
+            
+                if (x_disp.length() < MAX_DIGIT) {
+                    if (x_disp.indexOf(".") == -1 || key != '.') {
+                        x_disp.concat(key);
+                        x = fp64_atof((char*)x_disp.c_str());
+                    }
+                }
+                prev_pushed_key_type = 0;
+            }
         }
 
         // display
