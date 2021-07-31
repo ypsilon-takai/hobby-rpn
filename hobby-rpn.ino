@@ -351,6 +351,9 @@ void loop() {
             
                 if (x_disp.length() < MAX_DIGIT) {
                     if (x_disp.indexOf(".") == -1 || key != '.') {
+                        // Issue #6
+                        // TODO: よりよい対応があるんじゃないかな。
+                        if (x_disp == "0") x_disp = "";
                         x_disp.concat(key);
                         x = fp64_atof((char*)x_disp.c_str());
                     }
