@@ -23,7 +23,7 @@ Wikiの方もご覧ください。
 
 今の見た目
 
-![こんな見た目です。](readme-image/calc_image_02.jpg)
+<img src="readme-image/calc_image_02.jpg" width="200" alt="こんな見た目です。">
 
 アンダーレイシートについては、Wikiで。
 
@@ -43,7 +43,7 @@ Wikiの方もご覧ください。
 
 モードの切り替えるにはMODEボタン(= 0ボタンの長押し)を使います。
 
-[ラジアンモード表示](reademe-image/radian_mode_indicator.png)
+![ラジアンモード表示](readme-image/radian_mode_indicator.png)
 
 
 ### "=" 長押しで、全クリアでなくて、xのみ消去
@@ -95,7 +95,7 @@ AdafluetのGFXでは、フォントの容量を圧縮できるように、一部
 
 [HPミュージアムにあるVoyegerのttfフォント](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/articles.cgi?read=286)を元にビットマップを作成。
 
-[実際に表示したところ](readme-image/Voyeger7seg.jpg)
+![実際に表示したところ](readme-image/Voyeger7seg.jpg)
 
 ただし、フォントの並びが普通のものと違うのか、変換ツールの問題なのか、正しく取り出せなかった。
 なんとか形は抽出できたので、それをベースに先ずは"8"を作って、そこから数字のフォントを作った。
