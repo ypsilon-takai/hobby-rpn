@@ -19,9 +19,12 @@ byte pin_col[] = {0, 1, 2, 3};   // PD
 byte pin_row[] = {3, 2, 1, 0};   // PC
 
 float64_t x, y, z, t;
+float64_t x_sig, x_exp;
+
 byte last_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
 
 boolean shift_mode = false;
+boolean exp_input = false;
 
 enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
@@ -174,6 +177,8 @@ void setup() {
 void loop() {
     static String x_disp = "";
     static String y_disp = "";
+    static String x_sig_str = "";
+    static String x_exp_str = "";
     static char prev_loop_key = 0;
     static byte prev_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
 
@@ -225,8 +230,21 @@ void loop() {
         else if (key == '-') {
             // -/+ change sign
             if (long_push) {
-                x = fp64_neg(x);
-                prev_pushed_key_type = last_pushed_key_type;
+                if (exp_input) {
+                    if (x_exp_str.startsWith("-")) {
+                        x_exp_str = x_exp_str.substring(1);
+                    }
+                    else {
+                        x_exp_str = "-" + x_exp_str;
+                    }
+                    x_disp = x_sig_str + "E" + x_exp_str;                    
+                    x = fp64_atof((char*)x_disp.c_str());                    
+                }
+                else {
+                    x = fp64_neg(x);
+                    prev_pushed_key_type = last_pushed_key_type;
+                    x_disp = fp64_to_string_wrap(x);                                    
+                }
             }
             // - substruct
             else {
@@ -236,8 +254,8 @@ void loop() {
 
                 x = fp64_sub(acc2, acc1);
                 prev_pushed_key_type = 1;
+                x_disp = fp64_to_string_wrap(x);                
             }
-            x_disp = fp64_to_string_wrap(x);
         }
         // '/' or x<>y
         else if (key == '/') {
@@ -265,6 +283,12 @@ void loop() {
             if (long_push) {
                 x = 0;
                 x_disp = "";
+
+                x_sig_str = x_exp_str = "";
+                x_sig = x_exp = 0;
+
+                exp_input = false;
+                
                 prev_pushed_key_type = 0;
             }
             // enter
@@ -286,6 +310,17 @@ void loop() {
                     }
                     else if (angle_mode == radian) {
                         angle_mode = degree;
+                    }
+                }
+                // start exponential inputr
+                else if(key == '.') {
+                    if (x != 0 && ! exp_input) {
+                        exp_input = true;
+
+                        x_sig_str = x_disp;
+                        x_exp_str = "0";
+                        x_sig = x;
+                        x_exp = 0;
                     }
                 }
 
@@ -341,16 +376,32 @@ void loop() {
                     prev_pushed_key_type = 1;
                     prev_pushed_key_type = 1;
                 }
-                x_disp = fp64_to_string_wrap(x);
+                if (exp_input) {
+                    x_disp = x_sig_str + "E" + x_exp_str;
+                }
+                else {
+                    x_disp = fp64_to_string_wrap(x);
+                }
                 blink_display();
             }
             else {
                 
                 if (prev_pushed_key_type == 1) push();          // operator
-                if (prev_pushed_key_type > 0) x_disp = "";      // operator or enter
+                if (prev_pushed_key_type > 0) {
+                    x_disp = "";      // operator or enter
+                    exp_input = false;
+                }
             
                 if (x_disp.length() < MAX_DIGIT) {
-                    if (x_disp.indexOf(".") == -1 || key != '.') {
+                    if (exp_input) {
+                        if (key != '.') {
+                            if (x_exp_str == "0")  x_exp_str = "";
+                            x_exp_str.concat(key);
+                            x_disp = x_sig_str + "E" + x_exp_str;
+                            x = fp64_atof((char*)x_disp.c_str());
+                        }
+                    }
+                    else if (x_disp.indexOf(".") == -1 || key != '.') {
                         // Issue #6
                         // TODO: よりよい対応があるんじゃないかな。
                         if (x_disp == "0") x_disp = "";
