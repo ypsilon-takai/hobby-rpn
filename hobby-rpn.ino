@@ -133,7 +133,7 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
 
     display.setCursor(4, 31);
     if (x_disp == "") {
-        x_disp = "0.";
+        x_disp = "0";
     }
     display.print(x_disp);
 
