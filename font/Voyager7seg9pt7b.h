@@ -1,4 +1,4 @@
-const uint8_t Voyeger7seg9pt7bBitmaps[] PROGMEM = {
+const uint8_t Voyager7seg9pt7bBitmaps[] PROGMEM = {
   0x00, 0x03, 0x00, 0xC0, 0x30, 0x7F, 0x9F, 0xE0, 0xC0, 0x30, 0x0C, 0x00, 
   0x00, 0xFC, 0x94, 0x00, 0x01, 0xFF, 0xF8, 0x00, 0x77, 0x70, 0x3F, 0x2F, 
   0x58, 0x6C, 0x3C, 0x1E, 0x0D, 0x03, 0x02, 0xC1, 0xE1, 0xF0, 0xD8, 0x6B, 
@@ -22,7 +22,7 @@ const uint8_t Voyeger7seg9pt7bBitmaps[] PROGMEM = {
   0x63, 0x31, 0x99, 0xCD, 0xB3, 0x8C, 0x00
 };
 
-const GFXglyph Voyeger7seg9pt7bGlyphs[] PROGMEM = {
+const GFXglyph Voyager7seg9pt7bGlyphs[] PROGMEM = {
   {     0,  10,  10,  11,    2,  -11 },   // 0x2B '+'
   {    13,   3,   5,  11,    3,   -2 },   // 0x2C ','
   {    16,   7,   4,  11,    3,   -8 },   // 0x2D '-'
@@ -80,8 +80,8 @@ const GFXglyph Voyeger7seg9pt7bGlyphs[] PROGMEM = {
   {   230,   9,  14,  11,    0,  -13 }    // 0x61 'a'
 };
 
-const GFXfont Voyeger7seg9pt7b PROGMEM = {
-    (uint8_t  *)Voyeger7seg9pt7bBitmaps, 
-    (GFXglyph *)Voyeger7seg9pt7bGlyphs, 0x2B, 0x61,   18 };
+const GFXfont Voyager7seg9pt7b PROGMEM = {
+    (uint8_t  *)Voyager7seg9pt7bBitmaps, 
+    (GFXglyph *)Voyager7seg9pt7bGlyphs, 0x2B, 0x61,   18 };
 
 // Approx. 218 bytes

@@ -1,4 +1,4 @@
-const uint8_t davinci_7x5_Bitmaps[] PROGMEM = {
+const uint8_t davinci_7x5_hr_Bitmaps[] PROGMEM = {
     0x00, 0x00, 0x00, 0xC0, 0x30, 0x0C, 0x03, 0x0F, 0xFF, 0xFF, 0x0C, 0x03, 
     0x00, 0xC0, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
     0x00, 0x00, 0x00, 0x00, 0x06, 0x03, 0xC0, 0xF0, 0x3C, 0x03, 0x00, 0xC0, 
@@ -30,7 +30,7 @@ const uint8_t davinci_7x5_Bitmaps[] PROGMEM = {
     0xE3, 0x30, 0xCC, 0x33, 0x0E, 0xFF, 0x9F, 0x30
 };
 
-const GFXglyph davinci_7x5_Glyphs[] PROGMEM = {
+const GFXglyph davinci_7x5_hr_Glyphs[] PROGMEM = {
     {     0,  10,  14,  12,    0,  -13 },   // 0x2B '+'
     {    18,  10,  16,  12,    0,  -13 },   // 0x2C ','
     {    38,  10,  14,  12,    0,  -13 },   // 0x2D '-'
@@ -88,4 +88,4 @@ const GFXglyph davinci_7x5_Glyphs[] PROGMEM = {
     {   326,  10,  14,  11,    0,  -13 }    // 0x61 'a'
 };
 
-const GFXfont davinci_7x5 PROGMEM = {(uint8_t *) davinci_7x5_Bitmaps,   (GFXglyph *)davinci_7x5_Glyphs, 0x2B, 0x61,   16};
+const GFXfont davinci_7x5_hr PROGMEM = {(uint8_t *) davinci_7x5_Bitmaps,   (GFXglyph *)davinci_7x5_Glyphs, 0x2B, 0x61,   16};

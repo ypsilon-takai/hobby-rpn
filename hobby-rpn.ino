@@ -29,13 +29,9 @@ enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
 
 GFXfont* mode_area_font = &yosi_6x4;
-<<<<<<< Updated upstream
-GFXfont* digit_area_font = &Voyeger7seg9pt7b;
-=======
-GFXfont* digit_area_font = &davinci_7x5_hr;
+//GFXfont* digit_area_font = &davinci_7x5_hr;
 //GFXfont* digit_area_font = &davinci_7x5;
-//GFXfont* digit_area_font = &Voyager7seg9pt7b;
->>>>>>> Stashed changes
+GFXfont* digit_area_font = &Voyager7seg9pt7b;
 
 void push() {
     t = z;
