@@ -2,7 +2,9 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <fp64lib.h>
-#include "font/Voyeger7seg9pt7b.h"
+#include "font/Voyager7seg9pt7b.h"
+#include "font/davinci_7x5.h"
+#include "font/davinci_7x5_hr.h"
 #include "font/yosi_6x4.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
@@ -27,7 +29,13 @@ enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
 
 GFXfont* mode_area_font = &yosi_6x4;
+<<<<<<< Updated upstream
 GFXfont* digit_area_font = &Voyeger7seg9pt7b;
+=======
+GFXfont* digit_area_font = &davinci_7x5_hr;
+//GFXfont* digit_area_font = &davinci_7x5;
+//GFXfont* digit_area_font = &Voyager7seg9pt7b;
+>>>>>>> Stashed changes
 
 void push() {
     t = z;

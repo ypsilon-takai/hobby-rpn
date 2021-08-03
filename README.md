@@ -91,13 +91,24 @@ AdafluetのGFXでは、フォントの容量を圧縮できるように、一部
 必要なのは、 0-9の数字、,(ドット)、+(プラス)、-(マイナス)、I,N,F,a(INFとNaN用)だけ。 (おまけで,(カンマ)も入れてある)
 
 
-### Voyeger風フォント
+### Voyager風フォント
 
-[HPミュージアムにあるVoyegerのttfフォント](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/articles.cgi?read=286)を元にビットマップを作成。
+[HPミュージアムにあるVoyagerのttfフォント](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/articles.cgi?read=286)を元にビットマップを作成。
 
-![実際に表示したところ](readme-image/Voyeger7seg.jpg)
+<img src="readme-image/voyager.png" width="500" alt="HP 15c風">
 
 ただし、フォントの並びが普通のものと違うのか、変換ツールの問題なのか、正しく取り出せなかった。
 なんとか形は抽出できたので、それをベースに先ずは"8"を作って、そこから数字のフォントを作った。
 記号とアルファベットのフォントについては、7セグは無視することにした。
+
+### Davinci(HP 42s)風フォント
+
+愛用のHP 42sの液晶はドットマトリクスであまりかっこよくないのですが、作っ
+てみました。解像度がちょうど倍くらいなので、まずは倍ドットで1つ
+
+<img src="readme-image/davinci.png" width="500" alt="HP 42s風">
+
+折角の解像度がもったいないので、テイストを残して、スムージングしたもの。
+
+<img src="readme-image/davinci_hr.png" width="500" alt="HP 42s風">
 
