@@ -88,4 +88,4 @@ const GFXglyph davinci_7x5_hr_Glyphs[] PROGMEM = {
     {   326,  10,  14,  11,    0,  -13 }    // 0x61 'a'
 };
 
-const GFXfont davinci_7x5_hr PROGMEM = {(uint8_t *) davinci_7x5_Bitmaps,   (GFXglyph *)davinci_7x5_Glyphs, 0x2B, 0x61,   16};
+const GFXfont davinci_7x5_hr PROGMEM = {(uint8_t *) davinci_7x5_hr_Bitmaps,   (GFXglyph *)davinci_7x5_hr_Glyphs, 0x2B, 0x61,   16};

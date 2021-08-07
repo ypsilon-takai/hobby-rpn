@@ -194,23 +194,33 @@ void loop() {
         boolean long_push = false;
         unsigned long pushed_time = millis();
         while (key_scan() == key) {
-            if (millis() - pushed_time > 1000 / 2) {    // 1sec
+            if (millis() - pushed_time > 1000 / 3) {    // 1sec
                 long_push = true;
                 break;
             }
         }
 
         if (key == '+') {
-            // no long press
-            float64_t acc1 = x;
-            pop();
-            float64_t acc2 = x;
+            if (long_push) {
+                if (shift_mode) {
+                    shift_mode = false;
+                }
+                else {
+                    shift_mode = true;
+                }
+            }
+            // - substruct
+            else {
+                float64_t acc1 = x;
+                pop();
+                float64_t acc2 = x;
 
-            x = fp64_add(acc2, acc1);
+                x = fp64_add(acc2, acc1);
 
-            x_disp = fp64_to_string_wrap(x);
-            prev_pushed_key_type = 1;
-            blink_display();
+                x_disp = fp64_to_string_wrap(x);
+                prev_pushed_key_type = 1;
+                blink_display();
+            }
         }
         // sqrt or multiply
         else if (key == '*') {
@@ -306,7 +316,19 @@ void loop() {
         }
         // numeral or .
         else {
-            if (long_push) {
+            if (shift_mode) {
+                if(key == '7') {
+                    digit_area_font = &davinci_7x5_hr;
+                }
+                else if(key == '8') {
+                    digit_area_font = &davinci_7x5;                    
+                }
+                else if(key == '9') {
+                    digit_area_font = &Voyager7seg9pt7b;
+                }
+                shift_mode = false;
+            }
+            else if (long_push) {
                 // toggle mode
                 if(key == '0') {
                     if (angle_mode == degree) {
