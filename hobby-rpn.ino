@@ -35,9 +35,9 @@ enum angle_type angle_mode = degree;
 
 GFXfont* mode_area_font = &yosi_6x4;
 
-//GFXfont* digit_area_font = &davinci_7x5_hr;
-GFXfont* digit_area_font = &davinci_7x5;
-//GFXfont* digit_area_font = &Voyager7seg9pt7b;
+//const GFXfont* digit_area_font = &davinci_7x5_hr;
+const GFXfont* digit_area_font = &davinci_7x5;
+//const GFXfont* digit_area_font = &Voyager7seg9pt7b;
 
 #define EEPROM_FONTNUM 0
 
