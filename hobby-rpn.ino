@@ -2,10 +2,12 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <fp64lib.h>
+#include <EEPROM.h>
 #include "font/Voyager7seg9pt7b.h"
 #include "font/davinci_7x5.h"
-#include "font/davinci_7x5_hr.h"
+//#include "font/davinci_7x5_hr.h"
 #include "font/yosi_6x4.h"
+#include "font/dc10b.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
@@ -32,9 +34,12 @@ enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
 
 GFXfont* mode_area_font = &yosi_6x4;
+
 //GFXfont* digit_area_font = &davinci_7x5_hr;
-//GFXfont* digit_area_font = &davinci_7x5;
-GFXfont* digit_area_font = &Voyager7seg9pt7b;
+GFXfont* digit_area_font = &davinci_7x5;
+//GFXfont* digit_area_font = &Voyager7seg9pt7b;
+
+#define EEPROM_FONTNUM 0
 
 void push() {
     t = z;
@@ -119,7 +124,7 @@ void init_display() {
     display.setFont(digit_area_font);
     display.setTextSize(1);
     display.setCursor(4, 31);
-    display.print("0.");
+    display.print("0");
     display.display();
 }
 
@@ -173,9 +178,22 @@ void setup() {
     DDRC  &= ~(_BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]));  // INPUT
     PORTC |=   _BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]);   // PULLUP
 
+    byte fnum = EEPROM.read(EEPROM_FONTNUM);
+    if (fnum == 0x07) {
+        digit_area_font = &dc10b_14x10;
+    }
+    else if (fnum == 0x08) {
+        digit_area_font = &davinci_7x5;
+    }
+    else {
+        digit_area_font = &Voyager7seg9pt7b;
+    }
+
     init_display();
     
     x = y = z = t = 0;
+
+    
 }
 
 void loop() {
@@ -308,7 +326,7 @@ void loop() {
             // enter
             else {
                 push();
-                
+
                 x_disp = fp64_to_string_wrap(x);
                 prev_pushed_key_type = 2;
             }
@@ -317,14 +335,17 @@ void loop() {
         // numeral or .
         else {
             if (shift_mode) {
-                if(key == '7') {
-                    digit_area_font = &davinci_7x5_hr;
+                if (key == '7') {
+                    digit_area_font = &dc10b_14x10;
+                    EEPROM.write(EEPROM_FONTNUM, 0x07);
                 }
-                else if(key == '8') {
-                    digit_area_font = &davinci_7x5;                    
+                else if (key == '8') {
+                    digit_area_font = &davinci_7x5;
+                    EEPROM.write(EEPROM_FONTNUM, 0x08);
                 }
-                else if(key == '9') {
+                else if (key == '9') {
                     digit_area_font = &Voyager7seg9pt7b;
+                    EEPROM.write(EEPROM_FONTNUM, 0x09);                    
                 }
                 shift_mode = false;
             }
