@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <fp64lib.h>
 #include <EEPROM.h>
-#include "font/Voyager7seg9pt7b.h"
+//#include "font/Voyager7seg9pt7b.h"
 #include "font/davinci_7x5.h"
 //#include "font/davinci_7x5_hr.h"
 #include "font/dc10b.h"
@@ -14,6 +14,10 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000, 100000);
 
 #define MAX_DIGIT     10
+
+#define DISP_LMARGIN 4
+#define DISP_UPPERLINE_BASE 13
+#define DISP_LOWERLINE_BASE 31
 
 #define GFX_BLACK 0
 #define GFX_WHITE 1
@@ -35,7 +39,6 @@ enum angle_type angle_mode = degree;
 //const GFXfont* digit_area_font = &davinci_7x5_hr;
 const GFXfont* digit_area_font = &davinci_7x5;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
-
 #define EEPROM_FONTNUM 0
 
 void push() {
@@ -118,7 +121,7 @@ void init_display() {
         
     display.setFont(digit_area_font);
     display.setTextSize(1);
-    display.setCursor(4, 31);
+    display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
     display.print("0");
     display.display();
 }
@@ -131,18 +134,43 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
     display.setFont(digit_area_font);
     display.setTextSize(1);
     
-    display.setCursor(4, 13);
+    display.setCursor(DISP_LMARGIN, DISP_UPPERLINE_BASE);
     display.print(y_disp);
+    display.setCursor(DISP_LMARGIN, DISP_UPPERLINE_BASE);
+    display.print(make_separator(y_disp));
 
-    display.setCursor(4, 31);
+    display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
     if (x_disp == "") {
         x_disp = "0";
     }
     display.print(x_disp);
+    display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);    
+    display.print(make_separator(x_disp));
 
     display.display();
 }
-    
+
+String make_separator(String digits) {
+    int len = digits.indexOf('.');
+    if (len == -1) {
+        // no period
+        len = digits.indexOf('E');
+        if (len == -1) {
+            // not exponential notation
+            len = digits.length();
+        }
+    }
+
+    String s = "_";
+    for(byte i=1; i<len; i++) {
+        if (i % 3 == 0) {
+            s = "`" + s;
+        } else {
+            s = "_" + s;
+        }
+    }
+    return s;
+}
 
 String fp64_to_string_wrap(float64_t n) {
     if (fp64_signbit(n)) {  // minus
@@ -177,11 +205,8 @@ void setup() {
     if (fnum == 0x07) {
         digit_area_font = &dc10b_14x10;
     }
-    else if (fnum == 0x08) {
+    else {        
         digit_area_font = &davinci_7x5;
-    }
-    else {
-        digit_area_font = &Voyager7seg9pt7b;
     }
 
     init_display();
@@ -342,10 +367,6 @@ void loop() {
                 else if (key == '8') {
                     digit_area_font = &davinci_7x5;
                     EEPROM.write(EEPROM_FONTNUM, 0x08);
-                }
-                else if (key == '9') {
-                    digit_area_font = &Voyager7seg9pt7b;
-                    EEPROM.write(EEPROM_FONTNUM, 0x09);                    
                 }
                 shift_mode = false;
             }
