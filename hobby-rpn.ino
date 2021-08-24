@@ -313,15 +313,20 @@ void loop() {
         else if (key == '=') {
             // clear
             if (long_push) {
-                x = 0;
-                x_disp = "";
+                if (x == 0) {
+                    pop();
+                    x_disp = fp64_to_string_wrap(x);
+                }
+                else {
+                    x = 0;
+                    x_disp = "";
 
-                x_sig_str = x_exp_str = "";
-                x_sig = x_exp = 0;
+                    x_sig_str = x_exp_str = "";
+                    x_sig = x_exp = 0;
 
-                exp_input = false;
-                
-                prev_pushed_key_type = 0;
+                    exp_input = false;
+                }
+                prev_pushed_key_type = 0;                
             }
             // enter
             else {
