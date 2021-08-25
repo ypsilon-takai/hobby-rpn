@@ -6,7 +6,6 @@
 #include "font/Voyager7seg9pt7b.h"
 #include "font/davinci_7x5.h"
 //#include "font/davinci_7x5_hr.h"
-#include "font/yosi_6x4.h"
 #include "font/dc10b.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
@@ -32,8 +31,6 @@ boolean exp_input = false;
 
 enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
-
-GFXfont* mode_area_font = &yosi_6x4;
 
 //const GFXfont* digit_area_font = &davinci_7x5_hr;
 const GFXfont* digit_area_font = &davinci_7x5;
@@ -96,19 +93,17 @@ void blink_display() {
 }
 
 void draw_mode_area() {
-    display.setFont(mode_area_font);
     if (angle_mode == radian) {
-        display.setTextSize(1);
-        display.setCursor(123, 8);
-        display.print('R');
+        // draw 'R" with lines
+        display.drawLine(124, 1, 126, 1, GFX_WHITE);
+        display.drawLine(124, 1, 124, 6, GFX_WHITE);
+        display.drawLine(127, 2, 127, 2, GFX_WHITE);
+        display.drawLine(124, 3, 126, 3, GFX_WHITE);
+        display.drawLine(127, 4, 127, 6, GFX_WHITE);
     }
     
     if (shift_mode == true) {
-        display.fillRect(122, 17, 6, 8, 1);    
-        display.setCursor(123, 24);
-        display.setTextColor(GFX_BLACK);
-        display.print('S');
-        display.setTextColor(GFX_WHITE);
+        display.fillRect(124, 17, 4, 6, GFX_WHITE);
     }
     display.setFont(digit_area_font);
 }    
