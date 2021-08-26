@@ -389,9 +389,6 @@ void loop() {
                 }
                 shift_mode = false;
             }
-            else if (long_push) {
-                // toggle mode
-                if(key == '0') {
                     if (angle_mode == degree) {
                         angle_mode = radian;
                     }
@@ -401,6 +398,12 @@ void loop() {
                 }
                 else if (key == '9') {
                     separator_mode = ! separator_mode;
+                }
+            }
+            else if (long_push) {
+                // toggle mode
+                if(key == '0') {
+                    // do nothing
                 }
                 // start exponential inputr
                 else if(key == '.') {
