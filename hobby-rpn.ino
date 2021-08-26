@@ -8,6 +8,13 @@
 //#include "font/davinci_7x5_hr.h"
 #include "font/dc10b.h"
 
+//davinci_7x5 : default
+#define FONT1 1
+//dc10b_14x10
+#define FONT2 2
+
+#define EEPROM_FONTNUM 0
+
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
 #define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -39,7 +46,8 @@ enum angle_type angle_mode = degree;
 //const GFXfont* digit_area_font = &davinci_7x5_hr;
 const GFXfont* digit_area_font = &davinci_7x5;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
-#define EEPROM_FONTNUM 0
+
+
 
 void push() {
     t = z;
@@ -199,8 +207,11 @@ void setup() {
     PORTC |=   _BV(pin_row[0]) | _BV(pin_row[1]) | _BV(pin_row[2]) | _BV(pin_row[3]);   // PULLUP
 
     byte fnum = EEPROM.read(EEPROM_FONTNUM);
-    if (fnum == 0x07) {
+    if (fnum == FONT1) {
         digit_area_font = &dc10b_14x10;
+    }
+    else if (fnum == FONT2) {
+        digit_area_font = &davinci_7x5;
     }
     else {        
         digit_area_font = &davinci_7x5;
@@ -358,12 +369,17 @@ void loop() {
         else {
             if (shift_mode) {
                 if (key == '7') {
-                    digit_area_font = &dc10b_14x10;
-                    EEPROM.write(EEPROM_FONTNUM, 0x07);
+                    byte fnum = EEPROM.read(EEPROM_FONTNUM);
+                    if (fnum == FONT1) {
+                        digit_area_font = &davinci_7x5;
+                        EEPROM.write(EEPROM_FONTNUM, FONT2);
+                    }
+                    else {
+                        digit_area_font = &dc10b_14x10;
+                        EEPROM.write(EEPROM_FONTNUM, FONT1);
+                    }
                 }
                 else if (key == '8') {
-                    digit_area_font = &davinci_7x5;
-                    EEPROM.write(EEPROM_FONTNUM, 0x08);
                 }
                 shift_mode = false;
             }
