@@ -43,6 +43,8 @@ boolean exp_input = false;
 enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
 
+boolean separator_mode = false;
+
 //const GFXfont* digit_area_font = &davinci_7x5_hr;
 const GFXfont* digit_area_font = &davinci_7x5;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
@@ -154,6 +156,10 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
 }
 
 String separated_digits(String digits) {
+    if (!separator_mode) {
+        return digits;
+    }
+    
     int base_pos = digits.indexOf('.');
     if (base_pos == -1) {
         // no period
@@ -392,6 +398,9 @@ void loop() {
                     else if (angle_mode == radian) {
                         angle_mode = degree;
                     }
+                }
+                else if (key == '9') {
+                    separator_mode = ! separator_mode;
                 }
                 // start exponential inputr
                 else if(key == '.') {
