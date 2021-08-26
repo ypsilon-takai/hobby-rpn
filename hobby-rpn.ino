@@ -15,7 +15,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 
 #define MAX_DIGIT     10
 
-#define DISP_LMARGIN 4
+#define DISP_LMARGIN 2
 #define DISP_UPPERLINE_BASE 13
 #define DISP_LOWERLINE_BASE 31
 
@@ -135,38 +135,35 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
     display.setTextSize(1);
     
     display.setCursor(DISP_LMARGIN, DISP_UPPERLINE_BASE);
-    display.print(y_disp);
-    display.setCursor(DISP_LMARGIN, DISP_UPPERLINE_BASE);
-    display.print(make_separator(y_disp));
-
+    display.print(separated_digits(y_disp));
+    
     display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
     if (x_disp == "") {
         x_disp = "0";
     }
-    display.print(x_disp);
-    display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);    
-    display.print(make_separator(x_disp));
-
+    display.print(separated_digits(x_disp));
     display.display();
 }
 
-String make_separator(String digits) {
-    int len = digits.indexOf('.');
-    if (len == -1) {
+String separated_digits(String digits) {
+    int base_pos = digits.indexOf('.');
+    if (base_pos == -1) {
         // no period
-        len = digits.indexOf('E');
-        if (len == -1) {
+        base_pos = digits.indexOf('E');
+        if (base_pos == -1) {
             // not exponential notation
-            len = digits.length();
+            base_pos = digits.length();
         }
     }
 
-    String s = "_";
-    for(byte i=1; i<len; i++) {
-        if (i % 3 == 0) {
-            s = "`" + s;
-        } else {
-            s = "_" + s;
+    int stop = 0;
+    if (digits.charAt(0) == '-') {
+        stop = 1;
+    }
+    String s = digits;
+    for (int i=base_pos-1; i > stop; i--) {
+        if ((base_pos - i) % 3 == 0) {
+            s = s.substring(0, i) + "^" + s.substring(i);
         }
     }
     return s;
