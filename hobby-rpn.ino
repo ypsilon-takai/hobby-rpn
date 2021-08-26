@@ -118,7 +118,6 @@ void draw_mode_area() {
     if (shift_mode == true) {
         display.fillRect(124, 17, 4, 6, GFX_WHITE);
     }
-    display.setFont(digit_area_font);
 }    
 
 void init_display() {
@@ -131,6 +130,7 @@ void init_display() {
         
     display.setFont(digit_area_font);
     display.setTextSize(1);
+
     display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
     display.print("0");
     display.display();
@@ -142,16 +142,18 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
     draw_mode_area();
     
     display.setFont(digit_area_font);
-    display.setTextSize(1);
-    
+
+    // upper row
     display.setCursor(DISP_LMARGIN, DISP_UPPERLINE_BASE);
     display.print(separated_digits(y_disp));
-    
+
+    // lower row
     display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
     if (x_disp == "") {
         x_disp = "0";
     }
     display.print(separated_digits(x_disp));
+
     display.display();
 }
 
@@ -246,7 +248,7 @@ void loop() {
         boolean long_push = false;
         unsigned long pushed_time = millis();
         while (key_scan() == key) {
-            if (millis() - pushed_time > 1000 / 3) {    // 1sec
+            if (millis() - pushed_time > 1000 / 5) {    // 1sec
                 long_push = true;
                 break;
             }
@@ -374,6 +376,8 @@ void loop() {
         // numeral or .
         else {
             if (shift_mode) {
+                shift_mode = false;
+
                 if (key == '7') {
                     byte fnum = EEPROM.read(EEPROM_FONTNUM);
                     if (fnum == FONT1) {
@@ -386,9 +390,6 @@ void loop() {
                     }
                 }
                 else if (key == '8') {
-                }
-                shift_mode = false;
-            }
                     if (angle_mode == degree) {
                         angle_mode = radian;
                     }
