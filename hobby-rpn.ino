@@ -4,16 +4,20 @@
 #include <fp64lib.h>
 #include <EEPROM.h>
 //#include "font/Voyager7seg9pt7b.h"
-#include "font/davinci_7x5.h"
-//#include "font/davinci_7x5_hr.h"
-#include "font/dc10b.h"
+#include "font/davinci_14x9.h"
+#include "font/dc10b_14x9.h"
 
-//davinci_7x5 : default
+//davinci_14x9 : default
 #define FONT1 1
-//dc10b_14x10
+//dc10b_14x9
 #define FONT2 2
 
+#define SEP_NO 0
+#define SEP_3 3
+#define SEP_4 4
+
 #define EEPROM_FONTNUM 0
+#define EEPROM_SEPARATOR 1
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
@@ -22,9 +26,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 
 #define MAX_DIGIT     10
 
-#define DISP_LMARGIN 2
+#define DISP_LMARGIN 4
 #define DISP_UPPERLINE_BASE 13
-#define DISP_LOWERLINE_BASE 31
+#define DISP_LOWERLINE_BASE 30
 
 #define GFX_BLACK 0
 #define GFX_WHITE 1
@@ -43,10 +47,10 @@ boolean exp_input = false;
 enum angle_type {degree, radian, grad};
 enum angle_type angle_mode = degree;
 
-boolean separator_mode = false;
+int separator_type = 0;
 
-//const GFXfont* digit_area_font = &davinci_7x5_hr;
-const GFXfont* digit_area_font = &davinci_7x5;
+//const GFXfont* digit_area_font = &davinci_14x9_hr;
+const GFXfont* digit_area_font = &davinci_14x9;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
 
 
@@ -110,13 +114,22 @@ void draw_mode_area() {
         // draw 'R" with lines
         display.drawLine(124, 1, 126, 1, GFX_WHITE);
         display.drawLine(124, 1, 124, 6, GFX_WHITE);
-        display.drawLine(127, 2, 127, 2, GFX_WHITE);
+        display.drawPixel(127, 2, GFX_WHITE);
         display.drawLine(124, 3, 126, 3, GFX_WHITE);
         display.drawLine(127, 4, 127, 6, GFX_WHITE);
     }
+
+    /* Separator indicator : Not so good.
+    if (separator_type == 4) {
+        display.drawRect(124, 10, 4, 6, GFX_WHITE);
+    }
+    else if (separator_type == 3) {
+        display.fillTriangle(124, 10, 127, 10, 124, 16, GFX_WHITE);
+    }
+    */
     
     if (shift_mode == true) {
-        display.fillRect(124, 17, 4, 6, GFX_WHITE);
+        display.fillRect(124, 20, 4, 6, GFX_WHITE);
     }
 }    
 
@@ -158,10 +171,10 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
 }
 
 String separated_digits(String digits) {
-    if (!separator_mode) {
+    if (separator_type == 0) {
         return digits;
     }
-    
+
     int base_pos = digits.indexOf('.');
     if (base_pos == -1) {
         // no period
@@ -178,7 +191,7 @@ String separated_digits(String digits) {
     }
     String s = digits;
     for (int i=base_pos-1; i > stop; i--) {
-        if ((base_pos - i) % 3 == 0) {
+        if ((base_pos - i) % separator_type == 0) {
             s = s.substring(0, i) + "^" + s.substring(i);
         }
     }
@@ -216,15 +229,20 @@ void setup() {
 
     byte fnum = EEPROM.read(EEPROM_FONTNUM);
     if (fnum == FONT1) {
-        digit_area_font = &dc10b_14x10;
+        //digit_area_font = &Voyager7seg9pt7b;        
+        digit_area_font = &dc10b_14x9;
     }
     else if (fnum == FONT2) {
-        digit_area_font = &davinci_7x5;
+        //digit_area_font = &Voyager7seg9pt7b;
+        digit_area_font = &davinci_14x9; 
     }
     else {        
-        digit_area_font = &davinci_7x5;
+        //digit_area_font = &Voyager7seg9pt7b;
+        digit_area_font = &davinci_14x9;         
     }
 
+    separator_type = EEPROM.read(EEPROM_SEPARATOR);
+    
     init_display();
     
     x = y = z = t = 0;
@@ -381,11 +399,12 @@ void loop() {
                 if (key == '7') {
                     byte fnum = EEPROM.read(EEPROM_FONTNUM);
                     if (fnum == FONT1) {
-                        digit_area_font = &davinci_7x5;
+                        //digit_area_font = &Voyager7seg9pt7b;
+                        digit_area_font = &davinci_14x9;
                         EEPROM.write(EEPROM_FONTNUM, FONT2);
                     }
                     else {
-                        digit_area_font = &dc10b_14x10;
+                        digit_area_font = &dc10b_14x9;
                         EEPROM.write(EEPROM_FONTNUM, FONT1);
                     }
                 }
@@ -398,7 +417,16 @@ void loop() {
                     }
                 }
                 else if (key == '9') {
-                    separator_mode = ! separator_mode;
+                    if (separator_type == 0) {
+                        separator_type = 3;
+                    }
+                    else if (separator_type == 3) {
+                        separator_type = 4;
+                    }
+                    else {
+                        separator_type = 0;
+                    }
+                    EEPROM.write(EEPROM_SEPARATOR, separator_type);
                 }
             }
             else if (long_push) {
