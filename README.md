@@ -22,7 +22,7 @@ Tokyo Flip-flopさんが提供している小型のRPN電卓同人ハードで�
 Wikiの方もご覧ください。
 
 
-<img src="readme-image/cheatsheet.png" width="200" alt="使いかたです。">
+<img src="readme-image/cheatsheet_01.png" width="200" alt="使いかたです。">
 
 アンダーレイシートについては、Wikiで。
 
