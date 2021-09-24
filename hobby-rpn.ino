@@ -524,9 +524,11 @@ void loop() {
                         }
                     }
                     else if (x_disp.indexOf(".") == -1 || key != '.') {
-                        // Issue #6
-                        // TODO: よりよい対応があるんじゃないかな。
+                        // Issue #6 モード変更すると0がのこってしまう。
+                        // Issue #13 小数の表示が xxのようにならないように。
+                        // TODO: よりよい対応があるんじゃないかな。                        
                         if (x_disp == "0") x_disp = "";
+                        if (x_disp == "" && key == '.') x_disp = "0";
                         x_disp.concat(key);
                         x = fp64_atof((char*)x_disp.c_str());
                     }
