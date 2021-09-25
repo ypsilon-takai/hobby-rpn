@@ -38,6 +38,7 @@ byte pin_row[] = {3, 2, 1, 0};   // PC
 
 float64_t x, y, z, t;
 float64_t x_sig, x_exp;
+float64_t lastx, plastx;
 
 byte last_pushed_key_type = 0;    // 0:numeral 1:operator 2:enter
 
@@ -246,8 +247,7 @@ void setup() {
     init_display();
     
     x = y = z = t = 0;
-
-    
+    lastx = plastx = 0;
 }
 
 void loop() {
@@ -262,6 +262,8 @@ void loop() {
     char key = key_scan();
     if (key != 0 && key != prev_loop_key) {
 
+        plastx = x;
+        
         // detect long push
         boolean long_push = false;
         unsigned long pushed_time = millis();
@@ -430,11 +432,13 @@ void loop() {
                 }
             }
             else if (long_push) {
-                // toggle mode
                 if(key == '0') {
-                    // do nothing
+                    // lastx
+                    push();
+                    x = lastx;
+                    prev_pushed_key_type = 2;
                 }
-                // start exponential inputr
+                // start exponential input
                 else if(key == '.') {
                     if (x != 0 && ! exp_input) {
                         exp_input = true;
@@ -536,6 +540,8 @@ void loop() {
                 prev_pushed_key_type = 0;
             }
         }
+        
+        if (prev_pushed_key_type == 1) lastx = plastx;
 
         // display
         y_disp = fp64_to_string_wrap(y);
