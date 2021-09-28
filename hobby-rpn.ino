@@ -136,17 +136,7 @@ void draw_mode_area() {
 void init_display() {
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.setTextColor(WHITE);
-
-    display.clearDisplay();
-
-    draw_mode_area();
-        
-    display.setFont(digit_area_font);
     display.setTextSize(1);
-
-    display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
-    display.print("0");
-    display.display();
 }
 
 void update_display(String x_disp, String y_disp, boolean is_two_line) {
@@ -162,9 +152,6 @@ void update_display(String x_disp, String y_disp, boolean is_two_line) {
 
     // lower row
     display.setCursor(DISP_LMARGIN, DISP_LOWERLINE_BASE);
-    if (x_disp == "") {
-        x_disp = "0";
-    }
     display.print(separated_digits(x_disp));
 
     display.display();
@@ -247,12 +234,12 @@ void setup() {
     
     x = y = z = t = 0;
 
-    
+    update_display(fp64_to_string_wrap(x), fp64_to_string_wrap(y), true);
 }
 
 void loop() {
-    static String x_disp = "";
-    static String y_disp = "";
+    static String x_disp = "0";
+    static String y_disp = "0";
     static String x_sig_str = "";
     static String x_exp_str = "";
     static char prev_loop_key = 0;
@@ -365,15 +352,16 @@ void loop() {
         }
         // clear or enter
         else if (key == '=') {
-            // clear
+            // clear or rolldown
             if (long_push) {
                 if (x == 0) {
+                    // rolldown
                     pop();
                     x_disp = fp64_to_string_wrap(x);
                 }
                 else {
                     x = 0;
-                    x_disp = "";
+                    x_disp = "0";
 
                     x_sig_str = x_exp_str = "";
                     x_sig = x_exp = 0;
@@ -408,6 +396,7 @@ void loop() {
                         EEPROM.write(EEPROM_FONTNUM, FONT1);
                     }
                 }
+                // Change angle mode (degree/radian)
                 else if (key == '8') {
                     if (angle_mode == degree) {
                         angle_mode = radian;
@@ -416,6 +405,7 @@ void loop() {
                         angle_mode = degree;
                     }
                 }
+                // Change digits separator. 
                 else if (key == '9') {
                     if (separator_type == 0) {
                         separator_type = 3;
@@ -430,7 +420,6 @@ void loop() {
                 }
             }
             else if (long_push) {
-                // toggle mode
                 if(key == '0') {
                     // do nothing
                 }
@@ -496,7 +485,6 @@ void loop() {
 
                     x_disp = fp64_to_string_wrap(x);
                     prev_pushed_key_type = 1;
-                    prev_pushed_key_type = 1;
                 }
                 if (exp_input) {
                     x_disp = x_sig_str + "E" + x_exp_str;
@@ -510,7 +498,7 @@ void loop() {
                 
                 if (prev_pushed_key_type == 1) push();          // operator
                 if (prev_pushed_key_type > 0) {
-                    x_disp = "";      // operator or enter
+                    x_disp = "0";      // operator or enter
                     exp_input = false;
                 }
             
@@ -527,8 +515,7 @@ void loop() {
                         // Issue #6 モード変更すると0がのこってしまう。
                         // Issue #13 小数の表示が xxのようにならないように。
                         // TODO: よりよい対応があるんじゃないかな。                        
-                        if (x_disp == "0") x_disp = "";
-                        if (x_disp == "" && key == '.') x_disp = "0";
+                        if (x_disp == "0" && key != '.') x_disp = "";
                         x_disp.concat(key);
                         x = fp64_atof((char*)x_disp.c_str());
                     }
