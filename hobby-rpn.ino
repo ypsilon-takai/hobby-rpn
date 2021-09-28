@@ -18,6 +18,10 @@
 
 #define EEPROM_FONTNUM 0
 #define EEPROM_SEPARATOR 1
+#define EEPROM_STACK_X 2
+#define EEPROM_STACK_Y 10
+#define EEPROM_STACK_Z 18
+#define EEPROM_STACK_T 26
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
@@ -54,17 +58,43 @@ const GFXfont* digit_area_font = &davinci_14x9;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
 
 
+void save_stack_to_eeprom(float64_t v, int eeprom_start_pos) {
+    byte* h = (byte*)&v;
+    for(int i=0; i < sizeof(v); i++) {
+        EEPROM.write(eeprom_start_pos + i, h[i]);
+    }
+}
+
+float64_t load_stack_from_eeprom(int eeprom_start_pos) {
+    float64_t v;
+    byte* h = (byte*)&v;
+    for(int i=0; i < sizeof(v); i++) {
+        h[i] = EEPROM.read(eeprom_start_pos + i);
+    }
+    return v;
+}
+
 
 void push() {
     t = z;
     z = y;
     y = x;
+    
+    save_stack_to_eeprom(x, EEPROM_STACK_X);
+    save_stack_to_eeprom(y, EEPROM_STACK_Y);
+    save_stack_to_eeprom(z, EEPROM_STACK_Z);
+    save_stack_to_eeprom(t, EEPROM_STACK_T);
 }
 
 void pop() {
     x = y;
     y = z;
     z = t;
+    
+    save_stack_to_eeprom(x, EEPROM_STACK_X);
+    save_stack_to_eeprom(y, EEPROM_STACK_Y);
+    save_stack_to_eeprom(z, EEPROM_STACK_Z);
+    save_stack_to_eeprom(t, EEPROM_STACK_T);
 }
 
 char key_scan() {
@@ -245,7 +275,11 @@ void setup() {
     
     init_display();
     
-    x = y = z = t = 0;
+    //x = y = z = t = 0;
+    x = load_stack_from_eeprom(EEPROM_STACK_X);
+    y = load_stack_from_eeprom(EEPROM_STACK_Y);
+    z = load_stack_from_eeprom(EEPROM_STACK_Z);
+    t = load_stack_from_eeprom(EEPROM_STACK_T);
 
     
 }
