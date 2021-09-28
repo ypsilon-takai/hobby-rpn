@@ -74,27 +74,23 @@ float64_t load_stack_from_eeprom(int eeprom_start_pos) {
     return v;
 }
 
+void save_all_stack() {
+    save_stack_to_eeprom(x, EEPROM_STACK_X);
+    save_stack_to_eeprom(y, EEPROM_STACK_Y);
+    save_stack_to_eeprom(z, EEPROM_STACK_Z);
+    save_stack_to_eeprom(t, EEPROM_STACK_T);
+}    
 
 void push() {
     t = z;
     z = y;
     y = x;
-    
-    save_stack_to_eeprom(x, EEPROM_STACK_X);
-    save_stack_to_eeprom(y, EEPROM_STACK_Y);
-    save_stack_to_eeprom(z, EEPROM_STACK_Z);
-    save_stack_to_eeprom(t, EEPROM_STACK_T);
 }
 
 void pop() {
     x = y;
     y = z;
     z = t;
-    
-    save_stack_to_eeprom(x, EEPROM_STACK_X);
-    save_stack_to_eeprom(y, EEPROM_STACK_Y);
-    save_stack_to_eeprom(z, EEPROM_STACK_Z);
-    save_stack_to_eeprom(t, EEPROM_STACK_T);
 }
 
 char key_scan() {
@@ -561,6 +557,7 @@ void loop() {
         // display
         y_disp = fp64_to_string_wrap(y);
         update_display(x_disp, y_disp, true);
+        save_all_stack();
     }
     last_pushed_key_type = prev_pushed_key_type;
     prev_loop_key = key;
