@@ -428,7 +428,7 @@ void loop() {
                     // lastx
                     push();
                     x = lastx;
-                    prev_pushed_key_type = 2;
+                    prev_pushed_key_type = 1;
                 }
                 // start exponential input
                 else if(key == '.') {
