@@ -7,18 +7,6 @@
 #include "font/davinci_14x9.h"
 #include "font/dc10b_14x9.h"
 
-//davinci_14x9 : default
-#define FONT1 1
-//dc10b_14x9
-#define FONT2 2
-
-#define SEP_NO 0
-#define SEP_3 3
-#define SEP_4 4
-
-#define EEPROM_FONTNUM 0
-#define EEPROM_SEPARATOR 1
-
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
 #define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -32,6 +20,16 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 
 #define GFX_BLACK 0
 #define GFX_WHITE 1
+
+#define FONT1 1
+#define FONT2 2
+
+#define SEP_NO 0
+#define SEP_3 3
+#define SEP_4 4
+
+#define EEPROM_FONTNUM 0
+#define EEPROM_SEPARATOR 1
 
 byte pin_col[] = {0, 1, 2, 3};   // PD
 byte pin_row[] = {3, 2, 1, 0};   // PC
