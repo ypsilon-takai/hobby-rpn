@@ -31,6 +31,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 #define EEPROM_FONTNUM 0
 #define EEPROM_SEPARATOR 1
 
+#define POP_MODE 0
+#define ROTATE_MODE 1
+
 byte pin_col[] = {0, 1, 2, 3};   // PD
 byte pin_row[] = {3, 2, 1, 0};   // PC
 
@@ -60,10 +63,14 @@ void push() {
     y = x;
 }
 
-void pop() {
+void pop(int mode) {
+    float64_t orgx = x;
     x = y;
     y = z;
     z = t;
+    if (mode == ROTATE_MODE) {
+        t = orgx;
+    }
 }
 
 char key_scan() {
@@ -273,7 +280,7 @@ void loop() {
             // - substruct
             else {
                 float64_t acc1 = x;
-                pop();
+                pop(POP_MODE);
                 float64_t acc2 = x;
 
                 x = fp64_add(acc2, acc1);
@@ -293,7 +300,7 @@ void loop() {
             // - substruct
             else {
                 float64_t acc1 = x;
-                pop();
+                pop(POP_MODE);
                 float64_t acc2 = x;
 
                 x = fp64_mul(acc2, acc1);
@@ -324,7 +331,7 @@ void loop() {
             // - substruct
             else {
                 float64_t acc1 = x;
-                pop();
+                pop(POP_MODE);
                 float64_t acc2 = x;
 
                 x = fp64_sub(acc2, acc1);
@@ -340,10 +347,15 @@ void loop() {
                 x = y;
                 y = tmp;
             }
+            // Rotate                 
+            else if (shift_mode) {
+                pop(ROTATE_MODE);
+                shift_mode = false;
+            }
             // '/' key
             else {
                 float64_t acc1 = x;
-                pop();
+                pop(POP_MODE);
                 float64_t acc2 = x;
     
                 x = fp64_div(acc2, acc1);
@@ -358,7 +370,7 @@ void loop() {
             if (long_push) {
                 if (x == 0) {
                     // rolldown
-                    pop();
+                    pop(POP_MODE);
                     x_disp = fp64_to_string_wrap(x);
                 }
                 else {
@@ -483,7 +495,7 @@ void loop() {
                 // power
                 else if(key == '3') {
                     float64_t acc1 = x;
-                    pop();
+                    pop(POP_MODE);
                     float64_t acc2 = x;
 
                     x = fp64_pow(acc2, acc1);
