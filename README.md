@@ -22,9 +22,23 @@ Tokyo Flip-flopさんが提供している小型のRPN電卓同人ハードで�
 Wikiの方もご覧ください。
 
 
-<img src="readme-image/cheatsheet_01.png" width="200" alt="使いかたです。">
+<img src="readme-image/cheatsheet_01.png" width="500" alt="使いかたです。">
 
 アンダーレイシートについては、Wikiで。
+
+---
+### LastX機能を入れました。
+
+0長押しがLastXです。
+
+### ローテート(R↓)を入れました。
+
+シフト÷ がローテートです。
+
+### 定数を入れました
+
+円周率(π) をシフト1に入れました。
+ネイピア数(e) をシフト2に入れました。
 
 ---
 ### 提供いただいたフォントを追加しました。
