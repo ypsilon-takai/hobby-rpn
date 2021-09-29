@@ -387,7 +387,6 @@ void loop() {
             // enter
             else {
                 push();
-
                 x_disp = fp64_to_string_wrap(x);
                 prev_pushed_key_type = 2;
             }
@@ -431,6 +430,18 @@ void loop() {
                         separator_type = 0;
                     }
                     EEPROM.write(EEPROM_SEPARATOR, separator_type);
+                }
+                // PI
+                else if (key == '1') {
+                    x = float64_NUMBER_PI;
+                    x_disp = fp64_to_string_wrap(x);                    
+                    prev_pushed_key_type = 1;
+                }
+                // Euler e
+                else if (key == '2') {
+                    x = float64_EULER_E;
+                    x_disp = fp64_to_string_wrap(x);
+                    prev_pushed_key_type = 1;
                 }
             }
             else if (long_push) {
