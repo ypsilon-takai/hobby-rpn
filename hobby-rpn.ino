@@ -268,50 +268,71 @@ void loop() {
             }
         }
 
-        if (key == '+') {
-            if (long_push) {
-                if (shift_mode) {
-                    shift_mode = false;
-                }
-                else {
-                    shift_mode = true;
-                }
-            }
-            // - substruct
-            else {
-                float64_t acc1 = x;
-                pop(POP_MODE);
-                float64_t acc2 = x;
+        if (shift_mode) {
+            shift_mode = false;
 
-                x = fp64_add(acc2, acc1);
-
+            // Rotate
+            if (key == '/') {
+                pop(ROTATE_MODE);
                 x_disp = fp64_to_string_wrap(x);
                 prev_pushed_key_type = 1;
-                blink_display();
             }
-        }
-        // sqrt or multiply
-        else if (key == '*') {
-            // square root
-            if (long_push) {
-                x = fp64_sqrt(x);
+            // PI
+            else if (key == '1') {
+                x = float64_NUMBER_PI;
+                x_disp = fp64_to_string_wrap(x);                    
                 prev_pushed_key_type = 1;
             }
-            // - substruct
-            else {
-                float64_t acc1 = x;
-                pop(POP_MODE);
-                float64_t acc2 = x;
-
-                x = fp64_mul(acc2, acc1);
+            // Euler e
+            else if (key == '2') {
+                x = float64_EULER_E;
+                x_disp = fp64_to_string_wrap(x);
                 prev_pushed_key_type = 1;
             }
-            x_disp = fp64_to_string_wrap(x);
+            // change font
+            else if (key == '7') {
+                byte fnum = EEPROM.read(EEPROM_FONTNUM);
+                if (fnum == FONT1) {
+                    //digit_area_font = &Voyager7seg9pt7b;
+                    digit_area_font = &davinci_14x9;
+                    EEPROM.write(EEPROM_FONTNUM, FONT2);
+                }
+                else {
+                    digit_area_font = &dc10b_14x9;
+                    EEPROM.write(EEPROM_FONTNUM, FONT1);
+                }
+            }
+            // Change angle mode (degree/radian)
+            else if (key == '8') {
+                if (angle_mode == degree) {
+                    angle_mode = radian;
+                }
+                else if (angle_mode == radian) {
+                    angle_mode = degree;
+                }
+            }
+            // Change digits separator. 
+            else if (key == '9') {
+                if (separator_type == 0) {
+                    separator_type = 3;
+                }
+                else if (separator_type == 3) {
+                    separator_type = 4;
+                }
+                else {
+                    separator_type = 0;
+                }
+                EEPROM.write(EEPROM_SEPARATOR, separator_type);
+            }
         }
-        // chsgn or substruct
-        else if (key == '-') {
-            // -/+ change sign
-            if (long_push) {
+        // Long push mode
+        else if (long_push) {
+            // toggle shift mode
+            if (key == '+') {
+                shift_mode = ! shift_mode;
+            }
+            // change sign
+            else if (key == '-') {
                 if (exp_input) {
                     if (x_exp_str.startsWith("-")) {
                         x_exp_str = x_exp_str.substring(1);
@@ -328,46 +349,75 @@ void loop() {
                     x_disp = fp64_to_string_wrap(x);                                    
                 }
             }
-            // - substruct
-            else {
-                float64_t acc1 = x;
-                pop(POP_MODE);
-                float64_t acc2 = x;
-
-                x = fp64_sub(acc2, acc1);
+            // square root
+            else if (key == '*') {
+                x = fp64_sqrt(x);
                 prev_pushed_key_type = 1;
-                x_disp = fp64_to_string_wrap(x);                
             }
-        }
-        // '/' or x<>y
-        else if (key == '/') {
-            // swap x and y
-            if (long_push) {
+            // swap x and y            
+            else if (key == '/') {
                 float64_t tmp = x;
                 x = y;
                 y = tmp;
             }
-            // Rotate                 
-            else if (shift_mode) {
-                pop(ROTATE_MODE);
-                shift_mode = false;
+
+            // Trigonometric functions
+            else if(key == '7') {
+                if (angle_mode == degree) x = deg2rad(x);
+                x = fp64_sin(x);
+                prev_pushed_key_type = 1;
             }
-            // '/' key
-            else {
+            else if(key == '8') {
+                if (angle_mode == degree) x = deg2rad(x);
+                x = fp64_cos(x);
+                prev_pushed_key_type = 1;
+            }
+            else if(key == '9') {
+                if (angle_mode == degree) x = deg2rad(x);
+                x = fp64_tan(x);
+                prev_pushed_key_type = 1;
+            }
+            else if(key == '4') {
+                x = fp64_asin(x);
+                if (angle_mode == degree) x = rad2deg(x);
+                prev_pushed_key_type = 1;
+            }
+            else if(key == '5') {
+                x = fp64_acos(x);
+                if (angle_mode == degree) x = rad2deg(x);
+                prev_pushed_key_type = 1;
+            }
+            else if(key == '6') {
+                x = fp64_atan(x);
+                if (angle_mode == degree) x = rad2deg(x);
+                prev_pushed_key_type = 1;
+            }
+            // logarithm
+            else if(key == '1') {
+                x = fp64_log10(x);
+                prev_pushed_key_type = 1;
+            }
+            else if(key == '2') {
+                x = fp64_log(x);
+                prev_pushed_key_type = 1;
+            }
+            // power
+            else if(key == '3') {
                 float64_t acc1 = x;
                 pop(POP_MODE);
                 float64_t acc2 = x;
-    
-                x = fp64_div(acc2, acc1);
+
+                x = fp64_pow(acc2, acc1);
+                prev_pushed_key_type = 1;
             }
-            x_disp = fp64_to_string_wrap(x);            
-            prev_pushed_key_type = 1;            
-            blink_display();
-        }
-        // clear or enter
-        else if (key == '=') {
-            // clear or rolldown
-            if (long_push) {
+            // lastx
+            else if(key == '0') {
+                push();
+                x = lastx;
+                prev_pushed_key_type = 1;
+            }
+            // clear or rolldown            
+            else if (key == '=') {
                 if (x == 0) {
                     // rolldown
                     pop(POP_MODE);
@@ -384,146 +434,55 @@ void loop() {
                 }
                 prev_pushed_key_type = 0;                
             }
-            // enter
+
+            // start exponential input mode
+            else if(key == '.') {
+                if (x != 0 && ! exp_input) {
+                    exp_input = true;
+
+                    x_sig_str = x_disp;
+                    x_exp_str = "0";
+                    x_sig = x;
+                    x_exp = 0;
+                }
+            }
+            
+            if (exp_input) {
+                x_disp = x_sig_str + "E" + x_exp_str;
+            }
             else {
+                x_disp = fp64_to_string_wrap(x);
+            }
+            
+            blink_display();
+        }
+        else {
+            // arithmetic operations
+            if (key == '+' || key == '-' || key == '*' || key == '/') {
+                float64_t acc1 = x;
+                pop(POP_MODE);
+                float64_t acc2 = x;
+
+                switch (key) {
+                case '+': x = fp64_add(acc2, acc1); break;
+                case '-': x = fp64_sub(acc2, acc1); break;
+                case '*': x = fp64_mul(acc2, acc1); break;
+                case '/': x = fp64_div(acc2, acc1); break;
+                }
+
+                x_disp = fp64_to_string_wrap(x);
+                prev_pushed_key_type = 1;
+                blink_display();
+            }
+            // enter
+            else if (key == '=') {
                 push();
                 x_disp = fp64_to_string_wrap(x);
                 prev_pushed_key_type = 2;
-            }
-            blink_display();
-        }
-        // numeral or .
-        else {
-            if (shift_mode) {
-                shift_mode = false;
-
-                if (key == '7') {
-                    byte fnum = EEPROM.read(EEPROM_FONTNUM);
-                    if (fnum == FONT1) {
-                        //digit_area_font = &Voyager7seg9pt7b;
-                        digit_area_font = &davinci_14x9;
-                        EEPROM.write(EEPROM_FONTNUM, FONT2);
-                    }
-                    else {
-                        digit_area_font = &dc10b_14x9;
-                        EEPROM.write(EEPROM_FONTNUM, FONT1);
-                    }
-                }
-                // Change angle mode (degree/radian)
-                else if (key == '8') {
-                    if (angle_mode == degree) {
-                        angle_mode = radian;
-                    }
-                    else if (angle_mode == radian) {
-                        angle_mode = degree;
-                    }
-                }
-                // Change digits separator. 
-                else if (key == '9') {
-                    if (separator_type == 0) {
-                        separator_type = 3;
-                    }
-                    else if (separator_type == 3) {
-                        separator_type = 4;
-                    }
-                    else {
-                        separator_type = 0;
-                    }
-                    EEPROM.write(EEPROM_SEPARATOR, separator_type);
-                }
-                // PI
-                else if (key == '1') {
-                    x = float64_NUMBER_PI;
-                    x_disp = fp64_to_string_wrap(x);                    
-                    prev_pushed_key_type = 1;
-                }
-                // Euler e
-                else if (key == '2') {
-                    x = float64_EULER_E;
-                    x_disp = fp64_to_string_wrap(x);
-                    prev_pushed_key_type = 1;
-                }
-            }
-            else if (long_push) {
-                if(key == '0') {
-                    // lastx
-                    push();
-                    x = lastx;
-                    prev_pushed_key_type = 1;
-                }
-                // start exponential input
-                else if(key == '.') {
-                    if (x != 0 && ! exp_input) {
-                        exp_input = true;
-
-                        x_sig_str = x_disp;
-                        x_exp_str = "0";
-                        x_sig = x;
-                        x_exp = 0;
-                    }
-                }
-
-                // Trigonometric functions
-                else if(key == '7') {
-                    if (angle_mode == degree) x = deg2rad(x);
-                    x = fp64_sin(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '8') {
-                    if (angle_mode == degree) x = deg2rad(x);
-                    x = fp64_cos(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '9') {
-                    if (angle_mode == degree) x = deg2rad(x);
-                    x = fp64_tan(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '4') {
-                    x = fp64_asin(x);
-                    if (angle_mode == degree) x = rad2deg(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '5') {
-                    x = fp64_acos(x);
-                    if (angle_mode == degree) x = rad2deg(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '6') {
-                    x = fp64_atan(x);
-                    if (angle_mode == degree) x = rad2deg(x);
-                    prev_pushed_key_type = 1;
-                }
-                // logarithm
-                else if(key == '1') {
-                    x = fp64_log10(x);
-                    prev_pushed_key_type = 1;
-                }
-                else if(key == '2') {
-                    x = fp64_log(x);
-                    prev_pushed_key_type = 1;
-                }
-                // power
-                else if(key == '3') {
-                    float64_t acc1 = x;
-                    pop(POP_MODE);
-                    float64_t acc2 = x;
-
-                    x = fp64_pow(acc2, acc1);
-
-                    x_disp = fp64_to_string_wrap(x);
-                    prev_pushed_key_type = 1;
-                }
-                if (exp_input) {
-                    x_disp = x_sig_str + "E" + x_exp_str;
-                }
-                else {
-                    x_disp = fp64_to_string_wrap(x);
-                }
                 blink_display();
             }
+            // numeral or .
             else {
-                
                 if (prev_pushed_key_type == 1) push();          // operator
                 if (prev_pushed_key_type > 0) {
                     x_disp = "0";      // operator or enter
