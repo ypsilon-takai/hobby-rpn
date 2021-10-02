@@ -7,6 +7,9 @@
 #include "font/davinci_14x9.h"
 #include "font/dc10b_14x9.h"
 
+// uncomment to enable stacks preservation
+//#define ENABLE_PRESERVE_STACKS
+
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 32    // OLED display height, in pixels
 #define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -30,6 +33,12 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET, 500000,
 
 #define EEPROM_FONTNUM 0
 #define EEPROM_SEPARATOR 1
+#define EEPROM_STACK_X 2
+#define EEPROM_STACK_Y 10
+#define EEPROM_STACK_Z 18
+#define EEPROM_STACK_T 26
+#define EEPROM_LASTX 34
+
 
 #define POP_MODE 0
 #define ROTATE_MODE 1
@@ -55,7 +64,40 @@ int separator_type = 0;
 const GFXfont* digit_area_font = &davinci_14x9;
 //const GFXfont* digit_area_font = &Voyager7seg9pt7b;
 
+#ifdef ENABLE_PRESERVE_STACKS
+void save_stack_to_eeprom(float64_t v, int eeprom_start_pos) {
+    byte* h = (byte*)&v;
+    for(int i=0; i < sizeof(v); i++) {
+        EEPROM.write(eeprom_start_pos + i, h[i]);
+    }
+}
 
+float64_t load_stack_from_eeprom(int eeprom_start_pos) {
+    float64_t v;
+    byte* h = (byte*)&v;
+    for(int i=0; i < sizeof(v); i++) {
+        h[i] = EEPROM.read(eeprom_start_pos + i);
+    }
+    return v;
+}
+
+void save_all_stacks() {
+    save_stack_to_eeprom(x, EEPROM_STACK_X);
+    save_stack_to_eeprom(y, EEPROM_STACK_Y);
+    save_stack_to_eeprom(z, EEPROM_STACK_Z);
+    save_stack_to_eeprom(t, EEPROM_STACK_T);
+    //save_stack_to_eeprom(lastx, EEPROM_LASTX);  // short memory
+}    
+
+void load_all_stacks() {
+    x = load_stack_from_eeprom(EEPROM_STACK_X);
+    y = load_stack_from_eeprom(EEPROM_STACK_Y);
+    z = load_stack_from_eeprom(EEPROM_STACK_Z);
+    t = load_stack_from_eeprom(EEPROM_STACK_T);
+    //lastx = load_stack_from_eeprom(EEPROM_LASTX);  // short memory
+}
+
+#endif
 
 void push() {
     t = z;
@@ -237,8 +279,15 @@ void setup() {
     separator_type = EEPROM.read(EEPROM_SEPARATOR);
     
     init_display();
-    
+
+
+
+#ifdef ENABLE_PRESERVE_STACKS
+    load_all_stacks();
+#else
     x = y = z = t = 0;
+#endif
+    
     lastx = plastx = 0;
 
     update_display(fp64_to_string_wrap(x), fp64_to_string_wrap(y), true);
@@ -516,6 +565,9 @@ void loop() {
         // display
         y_disp = fp64_to_string_wrap(y);
         update_display(x_disp, y_disp, true);
+#ifdef ENABLE_PRESERVE_STACKS
+        save_all_stacks();
+#endif
     }
     last_pushed_key_type = prev_pushed_key_type;
     prev_loop_key = key;
